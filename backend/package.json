@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "author": "Dhruv-2003",
+  "license": "MIT",
+  "dependencies": {
+    "@aztec/accounts": "0.87.8",
+    "@aztec/aztec.js": "0.87.8",
+    "@aztec/noir-contracts.js": "0.87.8",
+    "@prisma/client": "^6.9.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.1",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.0",
+    "prisma": "^6.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  }
+}
