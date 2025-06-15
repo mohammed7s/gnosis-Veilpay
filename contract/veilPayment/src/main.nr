@@ -2,6 +2,7 @@
 //mod utils;
 
 use dep::aztec::macros::aztec;
+use std::hash::poseidon;
 
 #[aztec]
 pub contract VeilPayment {
@@ -79,11 +80,9 @@ pub contract VeilPayment {
         let note = storage.issuer.get_note();
         assert(note.address == sender);
 
-        // docs:start:call_function
         Token::at(token)
             .transfer_in_private(sender, context.this_address(), amount, 1)
             .call(&mut context);
-        // docs:end:call_function
     }
 
     #[private]
@@ -111,8 +110,8 @@ pub contract VeilPayment {
         assert(depositer_note.address == sender, "Only depositer can claim clawback");
 
         // Reproduce the hash from the nonce, amount, and recipient
-        /*
-        let clawback_hash = poseidon2_hash(
+        
+        let clawback_hash = (
             [
                 nonce,
                 amount as Field,
@@ -121,7 +120,6 @@ pub contract VeilPayment {
                 0 // Use a specific generator index for clawback hash
             ]
         );
-        */
 
         // Check if the clawback request exists and is old enough
         //let request_time = storage.clawback_request.at(clawback_hash).read();
