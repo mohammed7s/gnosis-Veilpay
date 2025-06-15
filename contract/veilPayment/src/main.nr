@@ -2,30 +2,31 @@
 //mod utils;
 
 use dep::aztec::macros::aztec;
-use std::hash::poseidon;
 
 #[aztec]
 pub contract VeilPayment {
     use dep::aztec::{
-        macros::{ functions::{initializer, private}, storage::storage },
+        macros::{ functions::{initializer, private, public}, storage::storage },
         messages::logs::note::encode_and_encrypt_note,
     };
-
-    use dep::aztec::prelude::{AztecAddress, PrivateImmutable, PublicMutable, Map};
+    use dep::aztec::prelude::{AztecAddress, PrivateImmutable, PublicImmutable, Map};
     use dep::address_note::address_note::AddressNote;
     use dep::token::Token;
-    use aztec::protocol_types::storage;
+    use aztec::protocol_types::{storage, traits::ToField};
+    use poseidon::poseidon2;
 
     global CLAWBACK_DELAY: u64 = 180; // 3 minutes in seconds
 
     #[storage]
     struct Storage<Context> {
+      
         depositer: PrivateImmutable<AddressNote, Context>,
         issuer: PrivateImmutable<AddressNote, Context>,
 
         // Map to store clawback requests
-        clawback_request: Map<Field, PublicMutable<u64, Context>, Context>,        
+        clawback_request: Map<Field, PublicImmutable<u64, Context>, Context>,       
         key: PrivateImmutable<Field, Context>,
+        
     }
 
     // Creates a new instance
@@ -74,28 +75,35 @@ pub contract VeilPayment {
     }
 
     #[private]
-    fn clawback(token: AztecAddress, amount: u128) {
-        let sender = context.msg_sender();
-
-        let note = storage.issuer.get_note();
-        assert(note.address == sender);
-
-        Token::at(token)
-            .transfer_in_private(sender, context.this_address(), amount, 1)
-            .call(&mut context);
-    }
-
-    #[private]
     fn initialiateClawback(
         token: AztecAddress,
         amount: u128,
         recipient: AztecAddress,
         nonce: Field
-    ) ->  Field {
+    ) {
         let sender = context.msg_sender();
         let issuer_note = storage.issuer.get_note();
         assert(issuer_note.address == sender, "Only issuer can initiate clawback");
-        //call claimClawback(token, amount, recipient, nonce);
+        let clawback_hash = poseidon2::Poseidon2::hash([token.to_field(),recipient.to_field(), amount as Field, nonce], 4);
+        VeilPayment::at(context.this_address()).registerClawback(clawback_hash).enqueue(&mut context);
+    }
+
+    #[public]
+    fn registerClawback(
+        clawback_hash:Field
+    ) {
+        storage.clawback_request.at(clawback_hash).initialize(context.timestamp());
+    }
+
+    #[public]
+    fn checkClawbackAge(
+        clawback_hash:Field,
+        min_age: u64
+    ) {
+        let clawback_time = storage.clawback_request.at(clawback_hash).read();
+        let current_time = context.timestamp();
+        let clawback_valid_age = clawback_time + min_age; 
+        assert(current_time >= clawback_valid_age, "Clawback request is too recent");
     }
 
     #[private]
@@ -108,53 +116,16 @@ pub contract VeilPayment {
         let sender = context.msg_sender();
         let depositer_note = storage.depositer.get_note();
         assert(depositer_note.address == sender, "Only depositer can claim clawback");
-
-        // Reproduce the hash from the nonce, amount, and recipient
-        
-        let clawback_hash = (
-            [
-                nonce,
-                amount as Field,
-                recipient.to_field(),
-                Field::from(amount), recipient],
-                0 // Use a specific generator index for clawback hash
-            ]
-        );
+    
+        let clawback_hash = poseidon2::Poseidon2::hash([token.to_field(),recipient.to_field(), amount as Field, nonce], 4);
 
         // Check if the clawback request exists and is old enough
-        //let request_time = storage.clawback_request.at(clawback_hash).read();
-        //assert(request_time > 0 && context.block_timestamp() - request_time >= CLAWBACK_DELAY, 
-        //    "Clawback request is either non-existent or too recent");
-
+        VeilPayment::at(context.this_address()).checkClawbackAge(clawback_hash, CLAWBACK_DELAY ).enqueue(&mut context);
+        
         // Transfer the amount to the recipient
-        //Token::at(token).transfer(recipient, amount).call(&mut context);
-    }   //
-
-    //    #[public]
-    //     pub fn store_clawback_request(context: Context, clawback_hash: Field) {
-    //         let currrent_time = context.block_timestamp();
-    //         // Store the clawback request with the current timestamp
-    //         storage.clawback_request.at(clawback_hash).write(currrent_time);
-    //     }
-å
-    // user interacts with two functions, 
-        // i want to withdraw
-        // priv initialiateClawback()
-            // the private func, creates a hash of nounce , amount and recipient
-            // encues to the public function that will put the hash in storage ( with the current timestamp)
-            // now the user can claim it 
-
-     
-        //priv claimClawback() {
-            //public
-                // reproduce the hash, enqueues the public function, 
-                // asserts if is old enough (e.g. 3 min) 
-                // check if the hash is in storage
-                // if it is, send the amount to the recipient
-                // if not, then we return an error
+        Token::at(token).transfer_in_private(context.this_address(), recipient, amount, nonce).call(&mut context);
+    }
 }
-
-
 
 #[test]
 fn test_main() {

@@ -1,6 +1,6 @@
 [package]
-name = "veilPayment"
-type = "bin"
+name = "VeilPayment"
+type = "contract"
 authors = [""]
 
 [dependencies]
@@ -9,3 +9,4 @@ value_note = { git="https://github.com/AztecProtocol/aztec-packages/", tag="v0.8
 easy_private_state = { git="https://github.com/AztecProtocol/aztec-packages/", tag="v0.87.8", directory="noir-projects/aztec-nr/easy-private-state"}
 token = { git="https://github.com/AztecProtocol/aztec-packages/", tag="v0.87.8", directory="noir-projects/noir-contracts/contracts/app/token_contract" }
 address_note = { git="https://github.com/AztecProtocol/aztec-packages/", tag="v0.87.8", directory="noir-projects/aztec-nr/address-note"}
+poseidon = { tag = "v0.1.0", git = "https://github.com/noir-lang/poseidon" }
