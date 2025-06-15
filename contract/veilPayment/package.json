@@ -1,0 +1,17 @@
+{
+  "name": "veilpayment",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "compile": "aztec-nargo compile",
+    "check": "aztec-nargo check",
+    "test": "bun test:noir && bun test:ts"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

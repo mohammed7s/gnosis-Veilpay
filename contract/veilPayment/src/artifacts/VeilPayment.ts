@@ -98,8 +98,6 @@ export class VeilPaymentContract extends ContractBase {
     );
   }
   
-
-  
   /**
    * Returns this contract's artifact.
    */
@@ -178,6 +176,4 @@ ValueNote: {
     /** withdraw(token: struct, amount: integer, recipient: struct) */
     withdraw: ((token: AztecAddressLike, amount: (bigint | number), recipient: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
-
-  
 }
