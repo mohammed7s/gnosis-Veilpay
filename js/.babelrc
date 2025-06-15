@@ -1,0 +1,8 @@
+{
+    "presets": [
+      ["@babel/preset-env", { "targets": { "node": "current" } }],
+      ["@babel/preset-typescript", { "allowDeclareFields": true }],
+      "jest"
+    ],
+    "plugins": ["@babel/plugin-syntax-import-assertions"]
+  }
