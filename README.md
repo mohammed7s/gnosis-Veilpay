@@ -1,11 +1,5 @@
 # Gnosis Veil Pay
 
-![Gnosis Veil Pay Logo](GnosisVeilPay.png)
-
-# gnosis-Veilpay
-
-## Description (TL;DR)
-
 A private Gnosis Pay. Allowing users to spend GBPe/EURe (or any stables) in real world without revealing their 
 1. funding wallets 
 2. amounts of transaction 
@@ -21,6 +15,6 @@ This article is a nice summary of it: https://tzedonn.substack.com/p/22-crypto-c
 
 ## Solution
 
-Hackathon solution: Aztec rollup on EVM already has tooling for privacy sets so for hack, we wrote the gnosis pay logic of the smart contract wallet in Noir smart contract and deployed on Aztec. 
+Aztec based Solution: Aztec rollup on EVM already has tooling for privacy sets so for hack, we wrote the gnosis pay logic of the smart contract wallet in Noir smart contract and deployed on Aztec. 
 
 ![Gnosis Veil Pay Logo](GnosisVeilPay.png)
