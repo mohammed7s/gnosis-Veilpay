@@ -126,9 +126,3 @@ pub contract VeilPayment {
         Token::at(token).transfer_in_private(context.this_address(), recipient, amount, nonce).call(&mut context);
     }
 }
-
-#[test]
-fn test_main() {
-    // Uncomment to make test fail
-    // VeilPayment::main(1, 1);
-} 
