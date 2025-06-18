@@ -9,7 +9,7 @@ export default {
             ['@babel/preset-env', { targets: { node: 'current' } }],
             ['@babel/preset-typescript', { allowDeclareFields: true }],
           ],
-        },
+        }
       ],
     },
     transformIgnorePatterns: ['node_modules/(?!(@aztec)/)'],
@@ -19,4 +19,4 @@ export default {
     moduleNameMapper: {
       '^(\\.{1,2}/.*)\\.js$': '$1',
     },
-  }
+}

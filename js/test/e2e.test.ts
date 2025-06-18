@@ -84,7 +84,7 @@ describe('VeilPayment Contract Test', () => {
         // Add the note to depositer's wallet
         console.log('📝 Adding note to depositer wallet...');
         const note = new Note([new Fr(amount), secretHash]);
-        await depositer.addNote(
+        await pxe.addNote(
             new ExtendedNote(
                 note,
                 depositer.getAddress(),
@@ -103,11 +103,7 @@ describe('VeilPayment Contract Test', () => {
 
         // Deposit to VeilPayment
         console.log('💸 Depositing to VeilPayment contract...');
-        await veilPayment.withWallet(depositer)
-            .methods
-            .public_dispatch(new Fr(1)) // deposit selector
-            .send()
-            .wait();
+        await veilPayment.methods.deposit(token.address, amount).send().wait();
         console.log('✅ Deposit successful');
 
         // Check final balances
